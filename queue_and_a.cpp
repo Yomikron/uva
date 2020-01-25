@@ -67,29 +67,29 @@ int main() {
         }
 		// sort by staffId
         sort(staffs, staffs+M); 
-        int working[5] = {}, previousRequest[5] = {}, finalRequest[5] = {};
+        int working[5] = {}, previousTaskStartTime[5] = {}, endTime[5] = {};
         int totalTime = -2, now;
         timeline.push(-1);
+
 		// work through timeline
         while (!timeline.empty()) {
             now = timeline.top();
             timeline.pop();
-			
-            if (now == totalTime)
-                continue;
             totalTime = now;
-			
+
+			// check if tasks are finished
             for (int i = 0; i < M; i++) {
-                if (working[i] && finalRequest[i] <= now)
+                if (working[i] && endTime[i] <= now)
                     working[i] = 0;
             }
             vector< pair<int, int> > available;
             for (int i = 0; i < M; i++) {
                 if (working[i] == 0) {
-                    available.push_back(make_pair(previousRequest[i], i));
+                    available.push_back(make_pair(previousTaskStartTime[i], i));
                 }
             }
             sort(available.begin(), available.end(), cmp);
+            
             for (int i = 0; i < available.size(); i++) {
 				// pick prioritised worker from queue 
                 Staff &u = staffs[available[i].second];
@@ -100,10 +100,10 @@ int main() {
                         Task tmp = scheduler[topicId].top();
                         if (tmp.startTime <= now) {
                             scheduler[topicId].pop();
-                            previousRequest[available[i].second] = now;
-                            finalRequest[available[i].second] = now + tmp.serviceTime;
+                            previousTaskStartTime[available[i].second] = now;
+                            endTime[available[i].second] = now + tmp.serviceTime;
                             working[available[i].second] = 1;
-                            timeline.push(finalRequest[available[i].second]);
+                            timeline.push(endTime[available[i].second]);
                             break;
                         }
                     }

@@ -6,6 +6,7 @@
 using namespace std;
  
 #define N 100
+// n is the number of vertices, s the source and t the sink
 int adjacencyMatrix[N][N], parent[N], n, s, t;
  
 bool bfs() {
@@ -28,12 +29,12 @@ bool bfs() {
 int maxFlow() {
     int mf = 0, f, v;
     while (bfs()) {
-        // min
+        // find the minimum path
         v = t;
         f = numeric_limits<int>::max();
         while (parent[v] != v)
             f = min(f, adjacencyMatrix[parent[v]][v]), v = parent[v];
-        // update
+        // decrease all weights along the path
         v = t;
         mf += f;
         while (parent[v] != v)
@@ -46,13 +47,12 @@ int maxFlow() {
 int main() {
     int c, scenario = 0;
     while (scanf("%d", &n) == 1 && n) {
-        // input
+        // process input
         memset(adjacencyMatrix, 0, sizeof adjacencyMatrix);
         scanf("%d %d %d", &s, &t, &c);
         --s, --t;
         for (int i = 0, x, y, z; i < c; ++i)
             scanf("%d %d %d", &x, &y, &z), con(x - 1, y - 1, z);
-        // solve
         printf("Network %d\n", ++scenario);
         printf("The bandwidth is %d.\n\n", maxFlow());
     }
